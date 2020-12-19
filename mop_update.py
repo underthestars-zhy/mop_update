@@ -31,8 +31,11 @@ if sys.argv[1] == 'token':
     print('Done.')
 else:
     mop_db = shelve.open(mop_db_path + 'mop')
-    token = mop_db['update_token']
-    mop_db.close()
+    try:
+        token = mop_db['update_token']
+    except:
+        token = ''
+    last_update = mop_db['update_last_version']
 
     URL += token
 
@@ -45,6 +48,11 @@ else:
     print('NodeID: ' + update_dict['node_id'])
     print('TagName: ' + update_dict['tag_name'])
     print('Name: ' + update_dict['name'])
+    if last_update == update_dict['node_id']:
+        sys.exit()
+    else:
+        mop_db['update_last_version'] = update_dict['node_id']
+    mop_db.close()
 
     update_assets = dict(update_dict['assets'][0])
     down_url = update_assets['browser_download_url']
